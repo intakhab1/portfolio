@@ -37,32 +37,35 @@ if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.match
     }
   }
 
-  // Simple visitor counter using localStorage
-function updateLocalVisitorCount() {
-    let count = localStorage.getItem('visitorCount');
+//   // Simple visitor counter using localStorage
+// function updateLocalVisitorCount() {
+//     let count = localStorage.getItem('visitorCount');
     
-    if (count === null) {
-        count = 1;
-    } else {
-        count = parseInt(count) + 1;
-    }
-    
-    localStorage.setItem('visitorCount', count);
-    document.getElementById('visitorCount').textContent = count;
-}
-
-window.addEventListener('DOMContentLoaded', updateLocalVisitorCount);
-//   // Visitor counter
-// async function updateVisitorCount() {
-//     try {
-//         // Create a namespace for your counter (replace 'yournamespace' with something unique)
-//         const response = await fetch('https://api.countapi.xyz/hit/yournamespace/yourkey');
-//         const data = await response.json();
-//         document.getElementById('visitorCount').textContent = data.value;
-//     } catch (error) {
-//         console.error('Error updating visitor count:', error);
+//     if (count === null) {
+//         count = 1;
+//     } else {
+//         count = parseInt(count) + 1;
 //     }
+    
+//     localStorage.setItem('visitorCount', count);
+//     document.getElementById('visitorCount').textContent = count;
 // }
 
-// // Call the function when the page loads
-// window.addEventListener('DOMContentLoaded', updateVisitorCount);
+// window.addEventListener('DOMContentLoaded', updateLocalVisitorCount);
+
+// //
+
+const countElement = document.getElementById("visitorCount");
+const apiKey = "my-cool-website-counter";
+
+const apiUrl = `https://api.countapi.xyz/hit/intakhab/${apiKey}`;
+
+fetch(apiUrl)
+.then(response => response.json())
+.then(data => {
+    countElement.textContent = data.value;
+})
+.catch(error => {
+    console.error("Error fetching visitor count:", error);
+    countElement.textContent = "N/A";
+});
