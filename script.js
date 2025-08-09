@@ -37,9 +37,21 @@ if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.match
     }
   }
 
+//   visitor count
 async function updateCounter() {
   try {
     const response = await fetch('https://intakhab.vercel.app/api/counter');
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      const text = await response.text();
+      throw new Error(`Invalid content type. Received: ${contentType}. Body: ${text}`);
+    }
+    
     const data = await response.json();
     document.getElementById('visitorCount').textContent = data.count;
   } catch (error) {
@@ -50,6 +62,3 @@ async function updateCounter() {
     document.getElementById('visitorCount').textContent = count;
   }
 }
-
-window.addEventListener('DOMContentLoaded', updateCounter);
-
