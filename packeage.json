@@ -1,13 +1,11 @@
 {
-  "name": "visitor-counter-api",
+  "name": "portfolio",
   "version": "1.0.0",
-  "scripts": {
-    "start": "node api/counter.js"
-  },
+  "type": "module",
   "dependencies": {
     "mongodb": "^5.7.0"
   },
-  "engines": {
-    "node": "18.x"
+  "scripts": {
+    "start": "node api/counter.js"
   }
 }
