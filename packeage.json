@@ -1,0 +1,13 @@
+{
+  "name": "visitor-counter-api",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node api/counter.js"
+  },
+  "dependencies": {
+    "mongodb": "^5.7.0"
+  },
+  "engines": {
+    "node": "18.x"
+  }
+}
