@@ -54,6 +54,7 @@ async function updateCounter() {
     
     const data = await response.json();
     document.getElementById('visitorCount').textContent = data.count;
+    
   } catch (error) {
     console.error("Using localStorage fallback:", error);
     let count = localStorage.getItem('visitorCount') || 0;
