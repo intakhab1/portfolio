@@ -38,28 +38,40 @@ if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.match
   }
 
 //   visitor count
-async function updateCounter() {
-  try {
-    const response = await fetch('https://intakhab.vercel.app/api/counter');
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    const contentType = response.headers.get('content-type');
-    if (!contentType || !contentType.includes('application/json')) {
-      const text = await response.text();
-      throw new Error(`Invalid content type. Received: ${contentType}. Body: ${text}`);
-    }
-    
-    const data = await response.json();
-    document.getElementById('visitorCount').textContent = data.count;
-    
-  } catch (error) {
-    console.error("Using localStorage fallback:", error);
-    let count = localStorage.getItem('visitorCount') || 0;
-    count = parseInt(count) + 1;
-    localStorage.setItem('visitorCount', count);
-    document.getElementById('visitorCount').textContent = count;
+// Visitor count
+(function initVisitorCounter() {
+  function run() {
+    updateCounter().catch(console.error);
   }
-}
+
+  if (document.readyState !== 'loading') {
+    run();
+  } else {
+    document.addEventListener('DOMContentLoaded', run);
+  }
+
+  async function updateCounter() {
+    const el = document.getElementById('visitorCount');
+    if (!el) return; // element not present; nothing to update
+
+    try {
+      const response = await fetch('https://intakhab.vercel.app/api/counter', { cache: 'no-store' });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+      const contentType = response.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) {
+        const text = await response.text();
+        throw new Error(`Invalid content type: ${contentType}. Body: ${text}`);
+      }
+
+      const data = await response.json(); // parses JSON body[20]
+      el.textContent = typeof data.count === 'number' ? data.count : '0';
+    } catch (err) {
+      console.error('Counter fetch failed, using localStorage fallback:', err);
+      let count = parseInt(localStorage.getItem('visitorCount') || '0', 10);
+      count += 1;
+      localStorage.setItem('visitorCount', String(count));
+      el.textContent = String(count);
+    }
+  }
+})();
