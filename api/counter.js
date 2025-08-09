@@ -3,6 +3,16 @@ import { MongoClient } from 'mongodb';
 const uri = process.env.MONGODB_URI;
 
 export default async function handler(req, res) {
+  // CORS headers — allow your site
+  res.setHeader('Access-Control-Allow-Origin', 'https://home.iitk.ac.in');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+  // Preflight
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   if (!uri) {
     return res.status(500).json({ error: 'MONGODB_URI is missing' });
   }
@@ -23,12 +33,13 @@ export default async function handler(req, res) {
       { returnDocument: 'after', upsert: true }
     );
 
-    // In modern drivers, result is the updated document directly
-    // If your driver returns an object wrapper, adjust accordingly.
-    const doc = result?.value || result; // supports both styles[25][15]
-    return res.status(200).json({ count: doc?.count ?? 0 });
-  } catch (error) {
-    console.error('MongoDB Error:', error);
+    // Drivers often return { value: doc } for findOneAndUpdate; Mongoose returns doc directly.
+    const doc = result?.value || result;
+    const count = doc?.count ?? 0;
+
+    return res.status(200).json({ count });
+  } catch (err) {
+    console.error('MongoDB Error:', err);
     return res.status(500).json({ error: 'Failed to update counter' });
   } finally {
     try { await client.close(); } catch {}
